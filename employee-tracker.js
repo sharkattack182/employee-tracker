@@ -27,5 +27,13 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId);
-  connection.end();
+  afterConnection();
 });
+
+function afterConnection() {
+    connection.query("SELECT * FROM employees", function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      connection.end();
+    });
+  };
