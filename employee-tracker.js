@@ -19,9 +19,9 @@ inquirer.prompt([
     if(answers.action === "View Employees") {
        readEmployees(); //read employees
     }else  if(answers.action === "View Departments") {
-        readEmployees(); // read departments
+        readDepartments(); // read departments
     }else  if(answers.action === "View Roles") {
-        readEmployees(); // read roles
+        readRoles(); // read roles
     }else  if(answers.action === "Add Employee") {
         readEmployees(); // need to add more prompt to get the info first name last name role id and manager id 
     }else  if(answers.action === "Add Role") {
@@ -113,3 +113,20 @@ function readEmployees() {
         connection.end();
     });
 };
+
+function readDepartments() {
+    connection.query("SELECT * FROM departments", function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        connection.end();
+    });
+};
+
+function readRoles() {
+    connection.query("SELECT * FROM roles", function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        connection.end();
+    });
+};
+
