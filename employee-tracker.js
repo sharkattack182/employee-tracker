@@ -100,73 +100,126 @@ function newEmployee() {
             name: "manager"
         },
     ]).then(result => {
-            let first = result.first;
-            let last = result.last;
-            let role = result.role;
-            let manager = result.manager;
+        let first = result.first;
+        let last = result.last;
+        let role = result.role;
+        let manager = result.manager;
 
-            console.log("Creating new employee profile...\n");
-            var query = connection.query(
-                "INSERT INTO employees SET ?",
-                {
-                    first_name: `${first}`,
-                    last_name: `${last}`,
-                    role_id: `${role}`,
-                    manager_id: `${manager}`
-                },
-                function (err, res) {
-                    if (err) throw err;
-                    console.log(res.affectedRows + " employee added!\n");
-                    readEmployees();
-                }
-            );
-        })
-    
+        console.log("Creating new employee profile...\n");
+        var query = connection.query(
+            "INSERT INTO employees SET ?",
+            {
+                first_name: `${first}`,
+                last_name: `${last}`,
+                role_id: `${role}`,
+                manager_id: `${manager}`
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " employee added!\n");
+                readEmployees();
+            }
+        );
+    })
+
 };
-        
+
 
 function newDepartment() {
-    console.log("Creating new department...\n");
-    var query = connection.query(
-        "INSERT INTO departments SET ?",
+    inquirer.prompt([
         {
-            dept_name: "Maintnance"
+            type: "input",
+            message: "Please enter new department name",
+            name: "dept"
         },
-        function (err, res) {
-            if (err) throw err;
-            console.log(res.affectedRows + " departments updated!\n");
-            readDepartments();
-        }
-    );
+    ]).then(result => {
+        let dept = result.dept;
+
+        console.log("Creating new department...\n");
+        connection.query(
+            "INSERT INTO departments SET ?",
+            {
+                dept_name: `${dept}`
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " departments updated!\n");
+                readDepartments();
+            }
+        );
+
+    })
 };
 
 function newRole() {
-    console.log("Creating new role...\n");
-    var query = connection.query(
-        "INSERT INTO roles SET ?",
+    inquirer.prompt([
         {
-            title: "Janitor",
-            salary: 45000,
-            department_id: 3,
+            type: "input",
+            message: "Please new role's title.",
+            name: "title"
         },
-        function (err, res) {
-            if (err) throw err;
-            console.log(res.affectedRows + " role created!\n");
-            readRoles();
-        }
-    );
+        {
+            type: "input",
+            message: "Please new role's salary.",
+            name: "salary" //need to check that this is numerical
+        },
+        {
+            type: "list",
+            message: "Please enter department ID.",
+            choices: [1, 2, 3, 4],
+            name: "d_id"
+        },
+    ]).then(result => {
+        let title = result.title;
+        let salary = result.salary;
+        let dept_id = result.d_id;
+
+
+        console.log("Creating new role...\n");
+        var query = connection.query(
+            "INSERT INTO roles SET ?",
+            {
+                title: `${title}`,
+                salary: `${salary}`,
+                department_id: `${dept_id}`,
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " role created!\n");
+                readRoles();
+            }
+
+        );
+    });
 };
 
+
 function updateRole() {
+    inquirer.prompt([
+    {
+        type: "input",
+        message: "Please employees name.",
+        name: "name" //need to check that this is numerical
+    },
+    {
+        type: "list",
+        message: "Please employees new role_id.",
+        choices: [1, 2, 3, 4],
+        name: "role_id"
+    },
+]).then(result => {
+        let role_id = result.role_id;
+        let name = result.name;
+
     console.log("Updating Matt's profile...\n");
     var query = connection.query(
         "UPDATE employees SET ? WHERE ?",
         [
             {
-                role_id: 5
+                role_id: `${role_id}`
             },
             {
-                first_name: "Matt"
+                first_name: `${name}`
             }
         ],
         function (err, res) {
