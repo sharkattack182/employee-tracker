@@ -234,3 +234,6 @@ function updateRole() {
     );
     })
 };
+
+
+startPrompt();
