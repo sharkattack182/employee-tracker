@@ -3,7 +3,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
-
+//NEED TO LINK TOGETHER THE TABLES USING IDS 
 
 
 
