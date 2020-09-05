@@ -6,12 +6,12 @@ var inquirer = require("inquirer");
 //NEED TO LINK TOGETHER THE TABLES USING IDS 
 
 
-
-inquirer.prompt([
+function startPrompt() {
+    inquirer.prompt([
     {
         type: "list",
         message: "What do you want to do?",
-        choices: ["View Employees", "View Departments", "View Roles", "Add Employee", "Add Department", "Add Role", "Update Employee Role"],
+        choices: ["View Employees", "View Departments", "View Roles", "Add Employee", "Add Department", "Add Role", "Update Employee Role", "Exit"],
         name: "action"
     },
 ])
@@ -30,6 +30,8 @@ inquirer.prompt([
             newDepartment(); // add prompy for dept name 
         } else if (answers.action === "Update Employee Role") {
             updateRole()(); // need to target employee then update profile 
+        }else if (answers.action === "Exit") {
+            connection.end(); // ends connection
         }
     })
 
@@ -45,17 +47,15 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    //  newEmployee();
-    // updateEmployee();
-    //  deleteEmployee();
-    // readEmployees();
 });
+}
+
 
 function readEmployees() {
     connection.query("SELECT * FROM employees", function (err, res) {
         if (err) throw err;
         console.table(res);
-        connection.end();
+        startPrompt();
     });
 };
 
@@ -63,7 +63,7 @@ function readDepartments() {
     connection.query("SELECT * FROM departments", function (err, res) {
         if (err) throw err;
         console.table(res);
-        connection.end();
+        startPrompt();
     });
 };
 
@@ -71,7 +71,7 @@ function readRoles() {
     connection.query("SELECT * FROM roles", function (err, res) {
         if (err) throw err;
         console.table(res);
-        connection.end();
+        startPrompt();
     });
 };
 
@@ -118,6 +118,7 @@ function newEmployee() {
                 if (err) throw err;
                 console.log(res.affectedRows + " employee added!\n");
                 readEmployees();
+                startPrompt();
             }
         );
     })
@@ -145,6 +146,7 @@ function newDepartment() {
                 if (err) throw err;
                 console.log(res.affectedRows + " departments updated!\n");
                 readDepartments();
+                startPrompt();
             }
         );
 
@@ -187,6 +189,7 @@ function newRole() {
                 if (err) throw err;
                 console.log(res.affectedRows + " role created!\n");
                 readRoles();
+                startPrompt();
             }
 
         );
@@ -226,8 +229,8 @@ function updateRole() {
             if (err) throw err;
             console.log(res.affectedRows + " products updated!\n");
             readEmployees();
+            startPrompt();
         }
     );
-}
-
-
+    })
+};
