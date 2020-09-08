@@ -2,6 +2,7 @@
 
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require("console.table");
 
 //NEED TO LINK TOGETHER THE TABLES USING IDS 
 
@@ -53,7 +54,7 @@ function startPrompt() {
                     updateRole();
                     break;
                 case "Exit":
-                    connection.end()
+                    connection.end();
                     break;
             };
 
@@ -62,7 +63,9 @@ function startPrompt() {
 };
     
 function readEmployees() {
-    connection.query("SELECT * FROM employees", function (err, res) {
+
+    var queryString = "SELECT e.first_name AS employee_first_name, e.last_name AS employee_last_name, e.title AS title, e.salary AS salary, e.department_id AS dept_id, m.first_name AS manager_first_name, m.last_name AS manager_last_name FROM (SELECT first_name, last_name, title, salary, department_id, manager_id FROM employees LEFT JOIN roles ON employees.role_id = roles.id) AS e LEFT JOIN employees AS m ON  e.manager_id = m.id;";
+    connection.query(queryString, function (err, res) {
         if (err) throw err;
         console.table(res);
         startPrompt();
@@ -98,15 +101,13 @@ function newEmployee() {
             name: "last"
         },
         {
-            type: "list",
+            type: "input",
             message: "Please enter role ID.",
-            choices: [1, 2, 3, 4],
             name: "role"
         },
         {
-            type: "list",
+            type: "input",
             message: "Please enter manager ID.",
-            choices: [1, 2, 3, 4],
             name: "manager"
         },
     ]).then(result => {
@@ -128,7 +129,6 @@ function newEmployee() {
                 if (err) throw err;
                 console.log(res.affectedRows + " employee added!\n");
                 readEmployees();
-                // startPrompt();
             }
         );
     })
@@ -210,7 +210,7 @@ function updateRole() {
     inquirer.prompt([
         {
             type: "input",
-            message: "Please employees name.",
+            message: "Please add employees name.",
             name: "name"
         },
         {
@@ -222,7 +222,7 @@ function updateRole() {
         let role_id = result.role_id;
         let name = result.name;
 
-        console.log("Updating Matt's profile...\n");
+        console.log("Updating employee's profile...\n");
         connection.query(
             "UPDATE employees SET ? WHERE ?",
             [
@@ -235,8 +235,9 @@ function updateRole() {
             ],
             function (err, res) {
                 if (err) throw err;
-                console.log(res.affectedRows + " products updated!\n");
+                // console.log(res.affectedRows + " role updated!\n");
                 readEmployees();
+                connection.end();
                 startPrompt();
             }
         );
