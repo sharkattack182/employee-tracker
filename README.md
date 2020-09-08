@@ -37,5 +37,12 @@
  
  
  ## Visuals
- 
+
+ example of the view functions
+ <img src="Untitled_ Sep 7, 2020 9_36 PM.gif" alt="view examples">
+ <br>
+ Example of the add functions
+<img src="Untitled_ Sep 7, 2020 9_42 PM.gif" alt="view adds">
+
+
  ## Links

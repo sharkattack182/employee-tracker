@@ -26,7 +26,7 @@ function startPrompt() {
         {
             type: "list",
             message: "What do you want to do?",
-            choices: ["View Employees", "View Departments", "View Roles", "Add Employee", "Add Department", "Add Role", "Update Employee Role", "Exit"],
+            choices: ["View Employees", "View Departments", "View Roles", "Add Employee", "Add Department", "Add Role", "Update Employee Role", "Delete Employee", "Delete Role", "Delete Department", "Exit"],
             name: "action"
         },
     ])
@@ -53,6 +53,15 @@ function startPrompt() {
                 case "Update Employee Role":
                     updateRole();
                     break;
+                case "Delete Employee":
+                    deleteEmployee();
+                    break;
+                case "Delete Role":
+                    deleteRole();
+                    break;
+                case "Delete Department":
+                    deleteDepartment();
+                    break;
                 case "Exit":
                     connection.end();
                     break;
@@ -61,7 +70,7 @@ function startPrompt() {
 
         });
 };
-    
+
 function readEmployees() {
 
     var queryString = "SELECT e.first_name AS employee_first_name, e.last_name AS employee_last_name, e.title AS title, e.salary AS salary, e.department_id AS dept_id, m.first_name AS manager_first_name, m.last_name AS manager_last_name FROM (SELECT first_name, last_name, title, salary, department_id, manager_id FROM employees LEFT JOIN roles ON employees.role_id = roles.id) AS e LEFT JOIN employees AS m ON  e.manager_id = m.id;";
@@ -237,7 +246,78 @@ function updateRole() {
                 if (err) throw err;
                 // console.log(res.affectedRows + " role updated!\n");
                 readEmployees();
-                connection.end();
+                startPrompt();
+            }
+        );
+    })
+};
+
+function deleteEmployee() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Please type the first name of the employee you wish to delete.",
+            name: "name"
+        },
+    ]).then(result => {
+        console.log("Deleting employee...\n");
+        connection.query(
+            "DELETE FROM employees WHERE ?",
+            {
+                first_name: `${result.name}`
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " employee deleted!\n");
+                readEmployees();
+                startPrompt();
+            }
+        );
+    })
+};
+
+function deleteRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Please type the title of the role you wish to delete.",
+            name: "title"
+        },
+    ]).then(result => {
+        console.log("Deleting role...\n");
+        connection.query(
+            "DELETE FROM roles WHERE ?",
+            {
+                title: `${result.title}`
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " role deleted!\n");
+                readRoles();
+                startPrompt();
+            }
+        );
+    })
+};
+
+function deleteRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Please type name of the department you wish to delete.",
+            name: "dept"
+        },
+    ]).then(result => {
+        console.log("Deleting department...\n");
+        connection.query(
+            "DELETE FROM departments WHERE ?",
+            {
+                dept_name: `${result.dept}`
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " role deleted!\n");
+                readDepartments();
                 startPrompt();
             }
         );
